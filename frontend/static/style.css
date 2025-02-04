@@ -15,9 +15,14 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    margin-bottom: 30vh;
 }
 
 .container {
+    position: absolute;
+    top: 20vh; /* o el valor que necesites */
+    left: 50%;
+    transform: translateX(-50%);
     text-align: center;
     max-width: 900px;
     width: 100%;
@@ -170,32 +175,77 @@ button:hover {
 #selected-anime-container {
     text-align: center;
     max-width: 800px;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    padding: 30px;
+    background: linear-gradient(135deg, #ffffff, #f0f0f0);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
     margin-top: 20px;
+    margin: 20px auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* Estilo para el título del anime */
+#selected-anime-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 5px;
+}
+
+/* Estilo para la imagen */
 #selected-anime-image {
-    width: 200px;
-    height: 300px;
+    width: 220px;
+    height: 320px;
     object-fit: cover;
     border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Estilo para el rating y episodios */
+#selected-anime-rating,
+#selected-anime-episodes {
+    font-size: 18px;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Estilo para la sinopsis */
+#selected-anime-synopsis {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.6;
+    max-width: 90%;
+    text-align: justify;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    margin:auto;
+}
+
+/* Botón de volver */
 #back-button {
-    background-color: #5c6bc0;
+    padding: 12px 24px;
+    background-color: #0a0a0a;
     color: white;
-    padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 16px;
     margin-top: 20px;
+    transition: background 0.3s ease-in-out;
 }
 
 #back-button:hover {
-    background-color: #3f4f9e;
+    background-color: #333;
+    transform: scale(1.05);
 }
 
 /* Contenedor de sugerencias */
@@ -211,6 +261,7 @@ button:hover {
     justify-content: space-between;   /* Distribuye las cards de manera equitativa */
     position: relative;
     overflow-x: auto;                 /* Permite desplazamiento horizontal si es necesario */
+    
 }
 
 /* Regla para los elementos dentro del contenedor autocomplete */
@@ -256,6 +307,14 @@ button:hover {
     #autocomplete-container .autocomplete-item {
         width: calc(50% - 10px);  /* En pantallas más pequeñas, los elementos ocuparán el 50% */
     }
+
+    #autocomplete-container .autocomplete-item .autocomplete-title {
+        display: block;          /* Se asegura que el elemento sea de bloque */
+        width: 100%;             /* Ocupa todo el ancho del contenedor */
+        white-space: nowrap;     /* Evita saltos de línea */
+        overflow: hidden;        /* Oculta el texto que sobrepase el ancho */
+        text-overflow: ellipsis; /* Agrega puntos suspensivos al final */
+    }
     
     #autocomplete-container .autocomplete-item img {
         width: 120px;  /* Ajuste del tamaño de las imágenes para pantallas medianas */
@@ -265,6 +324,14 @@ button:hover {
 @media (max-width: 480px) {
     #autocomplete-container .autocomplete-item {
         width: 100%;  /* En pantallas muy pequeñas, los elementos ocuparán el 100% */
+    }
+
+    #autocomplete-container .autocomplete-item .autocomplete-title {
+        display: block;          /* Se asegura que el elemento sea de bloque */
+        width: 100%;             /* Ocupa todo el ancho del contenedor */
+        white-space: nowrap;     /* Evita saltos de línea */
+        overflow: hidden;        /* Oculta el texto que sobrepase el ancho */
+        text-overflow: ellipsis; /* Agrega puntos suspensivos al final */
     }
 
     #autocomplete-container .autocomplete-item img {

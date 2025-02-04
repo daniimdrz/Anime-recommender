@@ -8,6 +8,48 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ----------------------------
+// Función para obtener y mostrar recomendaciones
+// ----------------------------
+function getRecommendations(animeTitle) {
+    if (!animeTitle) return; 
+    
+    // Ocultar autocomplete si está visible
+    document.getElementById('autocomplete-container').style.display = 'none';
+
+    // Ocultar el botón de "Get recommendations"
+    document.querySelector('button[type="submit"]').style.display = 'none';
+
+    // Petición al endpoint de recomendaciones
+    fetch(`/recomendaciones?anime=${encodeURIComponent(animeTitle)}`)
+        .then(response => response.json())
+        .then(data => {
+            allRecommendations = data;
+            const animeList = document.getElementById('anime-list');
+            const recommendationsContainer = document.getElementById('recommendations-container');
+
+            // Limpiar contenido previo
+            animeList.innerHTML = '';
+
+            if (allRecommendations && allRecommendations.length > 0) {
+                recommendationsContainer.style.display = 'block';
+                // Renderizar las primeras 3 recomendaciones
+                renderRecommendations(0, 3);
+                // Crear el botón "Mostrar más" si existen más recomendaciones
+                createShowMoreButton(3);
+            } else {
+                recommendationsContainer.style.display = 'none';
+                animeList.innerHTML = '<div>No se encontraron recomendaciones.</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener las recomendaciones:', error);
+        });
+
+    // Limpiar el input de búsqueda
+    document.getElementById('anime-title').value = '';
+}
+
+// ----------------------------
 // AUTOCOMPLETADO
 // ----------------------------
 document.getElementById('anime-title').addEventListener('input', function(event) {
@@ -35,11 +77,15 @@ document.getElementById('anime-title').addEventListener('input', function(event)
                         <img src="${suggestion.main_picture_medium}" alt="${suggestion.title}" width="100">
                         <div class="autocomplete-title">${suggestion.title}</div>
                     `;
-                    // Al hacer clic, se completa el input y se oculta el contenedor
+                    // Al hacer clic, se completa el input y se solicitan las recomendaciones directamente
                     item.addEventListener('click', function() {
+                        // Actualizamos el input (opcional)
                         document.getElementById('anime-title').value = suggestion.title;
+                        // Limpiar y ocultar el contenedor de autocompletado
                         container.innerHTML = '';
                         container.style.display = 'none';
+                        // Solicitar las recomendaciones inmediatamente
+                        getRecommendations(suggestion.title);
                     });
                     container.appendChild(item);
                 });
@@ -60,7 +106,11 @@ document.getElementById('anime-title').addEventListener('input', function() {
     // Limpiar las recomendaciones si el usuario empieza a escribir algo nuevo
     document.getElementById('anime-list').innerHTML = '';
     document.getElementById('recommendations-container').style.display = 'none';
-    document.getElementById('show-more-button').style.display = 'none';  // Ocultar el botón de "Mostrar más"
+    // Ocultar el botón de "Mostrar más" si existe
+    const showMoreButton = document.getElementById('show-more-button');
+    if (showMoreButton) {
+        showMoreButton.style.display = 'none';
+    }
 });
 
 // ----------------------------
@@ -133,44 +183,8 @@ function createShowMoreButton(currentCount) {
 document.getElementById('anime-form').addEventListener('submit', function(event) {
     event.preventDefault();
     const animeTitle = document.getElementById('anime-title').value;
-    if (!animeTitle) return;
-
-    // Ocultar autocomplete si está visible
-    document.getElementById('autocomplete-container').style.display = 'none';
-
-    // Ocultar el botón de "Get recommendations"
-    document.querySelector('button[type="submit"]').style.display = 'none';
-
-    // Petición al endpoint de recomendaciones
-    fetch(`/recomendaciones?anime=${encodeURIComponent(animeTitle)}`)
-        .then(response => response.json())
-        .then(data => {
-            allRecommendations = data;
-            const animeList = document.getElementById('anime-list');
-            const recommendationsContainer = document.getElementById('recommendations-container');
-
-            // Limpiar contenido previo
-            animeList.innerHTML = '';
-
-            if (allRecommendations && allRecommendations.length > 0) {
-                recommendationsContainer.style.display = 'block';
-                // Renderizar las primeras 3 recomendaciones
-                renderRecommendations(0, 3);
-                // Crear el botón "Mostrar más" si existen más recomendaciones
-                createShowMoreButton(3);
-            } else {
-                recommendationsContainer.style.display = 'none';
-                animeList.innerHTML = '<div>No se encontraron recomendaciones.</div>';
-            }
-        })
-        .catch(error => {
-            console.error('Error al obtener las recomendaciones:', error);
-        });
-
-    // Limpiar el input de búsqueda
-    document.getElementById('anime-title').value = '';
+    getRecommendations(animeTitle);
 });
-
 
 // ----------------------------
 // MOSTRAR DETALLES DE LA RECOMENDACIÓN SELECCIONADA
@@ -187,6 +201,10 @@ function showSelectedAnime(anime) {
     document.getElementById('selected-anime-episodes').textContent = `Episodes: ${anime.num_episodes}`;
     document.getElementById('selected-anime-synopsis').textContent = `Description: ${anime.synopsis}`;
 }
+
+
+
+
 
 // ----------------------------
 // BOTÓN "BACK" PARA VOLVER A LAS RECOMENDACIONES
