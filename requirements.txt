@@ -5,4 +5,4 @@ scikit-learn==1.3.2
 fuzzywuzzy==0.18.0
 gunicorn==20.1.0
 Cython==0.29.36
-werkzeug>=2.2.2
+werkzeug>=2.2.2,<3.0.0
