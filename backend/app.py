@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request, render_template
 import os
 
 # Importamos la configuración y la lógica modularizada
-from config import DEBUG, DATABASE
+from backend.config import DEBUG, DATABASE
 from database import load_data
 from recommendations import prepare_data, recomendar_animes
 
