@@ -1,12 +1,9 @@
-# backend/app.py
-
-from flask import Flask, jsonify, request, render_template
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Importamos la configuración y la lógica modularizada
-from backend.config import DEBUG, DATABASE
+from flask import Flask, jsonify, request, render_template
+from config import DEBUG, DATABASE
 from database import load_data
 from recommendations import prepare_data, recomendar_animes
 
@@ -14,32 +11,28 @@ app = Flask(__name__,
             template_folder=os.path.join('..', 'frontend'),
             static_folder=os.path.join('..', 'frontend', 'static'))
 
-# Cargamos los datos y preparamos la similitud
+# Cargar datos y preparar la matriz de similitud (se realiza una sola vez al iniciar)
+print("Cargando datos de la base de datos...")
 df = load_data(DATABASE)
+print("Preparando la matriz de similitud...")
 df, similarity_df = prepare_data(df)
+print("Datos cargados exitosamente.")
 
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/autocomplete', methods=['GET'])
 def autocomplete():
     query = request.args.get('query', '')
     if not query:
         return jsonify([])
-
     query_lower = query.lower()
-    # Filtramos por títulos que contengan el query (sin distinguir mayúsculas)
+    # Filtrar títulos que contengan el query (sin distinción de mayúsculas)
     matches = df[df['title'].str.lower().str.contains(query_lower)]
-    # Obtenemos un DataFrame con títulos únicos y sus imágenes; limitamos a 5 sugerencias.
     suggestions = matches[['title', 'main_picture_medium']].drop_duplicates().head(4)
-    # Convertimos el DataFrame a una lista de diccionarios
     suggestions_list = suggestions.to_dict(orient='records')
     return jsonify(suggestions_list)
-
-
-
 
 @app.route('/recomendaciones', methods=['GET'])
 def obtener_recomendaciones():
@@ -49,8 +42,7 @@ def obtener_recomendaciones():
         return jsonify(recomendaciones)
     else:
         return jsonify({"message": "Por favor, proporcione un nombre de anime para obtener recomendaciones."})
-    
-
 
 if __name__ == '__main__':
-    app.run(debug=DEBUG, host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+    port = int(os.getenv("PORT", 5000))
+    app.run(debug=DEBUG, host="0.0.0.0", port=port)
