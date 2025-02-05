@@ -2,6 +2,8 @@
 
 from flask import Flask, jsonify, request, render_template
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Importamos la configuración y la lógica modularizada
 from backend.config import DEBUG, DATABASE
